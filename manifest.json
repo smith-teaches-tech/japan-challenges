@@ -2,7 +2,7 @@
   "name": "Amazing Race Challenge - Japan",
   "short_name": "Race Challenge",
   "description": "Team-based challenge competition app for Japan class trip",
-  "start_url": "/",
+  "start_url": "./",
   "display": "standalone",
   "background_color": "#c41e3a",
   "theme_color": "#c41e3a",
