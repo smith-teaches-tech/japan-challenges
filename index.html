@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Amazing Race Challenge App</title>
+    <title>Tokyo Quest - Japan Challenge</title>
     
     <!-- PWA Manifest -->
     <link rel="manifest" href="manifest.json">
@@ -12,7 +12,7 @@
     <!-- iOS PWA Support -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Race Challenge">
+    <meta name="apple-mobile-web-app-title" content="Tokyo Quest">
     <link rel="apple-touch-icon" href="icon-192.png">
     
     <link rel="stylesheet" href="style.css">
@@ -20,12 +20,20 @@
 <body>
     <!-- Header -->
     <header>
-        <h1>🗻 Amazing Race Challenge</h1>
+        <h1>🗻 Tokyo Quest</h1>
         <div id="userInfo" class="user-info"></div>
     </header>
 
     <!-- Login/Signup Screen -->
     <div id="authScreen" class="screen">
+        <!-- Install App Button (shows when installable) -->
+        <div id="installPrompt" class="install-prompt hidden">
+            <button id="installButton" class="btn-install">
+                📱 Install App to Your Phone
+            </button>
+            <p class="install-hint">Install for easy access during the trip!</p>
+        </div>
+        
         <div class="auth-container">
             <h2>Team Login</h2>
             <div class="auth-tabs">
