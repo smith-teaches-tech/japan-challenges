@@ -265,7 +265,7 @@ async function initializeApp() {
 }
 
 function updateUserInfo(name) {
-    const icon = currentTeam ? currentTeam.icon || 'Ã°Å¸ÂÂ¯' : '';
+    const icon = currentTeam ? currentTeam.icon || '🏯' : '';
     const displayName = currentTeam ? `${icon} ${name}` : name;
     document.getElementById('userInfo').textContent = displayName;
 }
@@ -396,17 +396,17 @@ function createChallengeCard(challenge, submission) {
     
     if (!challenge.enabled) {
         // Challenge is disabled/locked
-        statusHTML = '<div class="challenge-locked">Ã°Å¸ââ Locked</div>';
+        statusHTML = '<div class="challenge-locked">🔒 Locked</div>';
         buttonHTML = '<button class="btn-upload" disabled>Locked</button>';
     } else if (submission) {
         if (submission.status === 'pending') {
-            statusHTML = '<div class="challenge-status status-pending">Ã¢ÂÂ³ Pending Review</div>';
+            statusHTML = '<div class="challenge-status status-pending">⏳ Pending Review</div>';
             buttonHTML = '<button class="btn-upload" disabled>Submitted</button>';
         } else if (submission.status === 'approved') {
             statusHTML = `<div class="challenge-status status-approved">✅ Approved! (+${submission.points_awarded} pts)</div>`;
             buttonHTML = '<button class="btn-upload" disabled>Completed</button>';
         } else if (submission.status === 'rejected') {
-            statusHTML = '<div class="challenge-status status-rejected">Ã¢ÂÅ Rejected - Try Again</div>';
+            statusHTML = '<div class="challenge-status status-rejected">❌ Rejected - Try Again</div>';
             buttonHTML = `<button class="btn-upload" onclick="openUploadModal(${challenge.id}, '${challenge.name}')">Resubmit Photo</button>`;
         }
     } else {
@@ -416,7 +416,7 @@ function createChallengeCard(challenge, submission) {
     card.innerHTML = `
         <h3>${challenge.name}</h3>
         <p>${challenge.description}</p>
-        <span class="challenge-points">Ã°Å¸Ââ  ${challenge.points} base points</span>
+        <span class="challenge-points">🏆 ${challenge.points} base points</span>
         ${statusHTML}
         ${buttonHTML}
     `;
@@ -505,7 +505,7 @@ async function loadPendingSubmissions() {
     try {
         const { data: submissions, error } = await supabaseClient
             .from('submissions')
-            .select('*, teams(team_name), challenges(name, points)')
+            .select('*, teams(team_name, icon), challenges(name, points)')
             .eq('status', 'pending')
             .order('created_at');
         
@@ -540,7 +540,7 @@ function createSubmissionCard(submission) {
     const card = document.createElement('div');
     card.className = 'submission-card';
     
-    const teamIcon = submission.teams.icon || 'Ã°Å¸ÂÂ¯';
+    const teamIcon = submission.teams.icon || '🏯';
     
     card.innerHTML = `
         <h4>${submission.challenges.name}</h4>
@@ -552,7 +552,7 @@ function createSubmissionCard(submission) {
         <img src="${submission.photo_url}" alt="Submission photo" class="submission-photo" onclick="window.open('${submission.photo_url}', '_blank')">
         <div class="submission-actions">
             <button class="btn-approve" onclick="approveSubmission(${submission.id}, ${submission.challenge_id}, '${submission.team_email}', ${submission.challenges.points})">✅ Approve</button>
-            <button class="btn-reject" onclick="rejectSubmission(${submission.id})">Ã¢ÂÅ Reject</button>
+            <button class="btn-reject" onclick="rejectSubmission(${submission.id})">❌ Reject</button>
         </div>
     `;
     
@@ -685,7 +685,7 @@ async function toggleChallenge(challengeId, enabled) {
         
         if (error) throw error;
         
-        alert(enabled ? '✅ Challenge Enabled!' : 'Ã°Å¸ââ Challenge Disabled');
+        alert(enabled ? '✅ Challenge Enabled!' : '🔒 Challenge Disabled');
         
     } catch (error) {
         console.error('Error toggling challenge:', error);
@@ -787,7 +787,7 @@ async function loadLeaderboard(isAdminView) {
             
             const rank = index + 1;
             const medal = rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : '';
-            const teamIcon = team.icon || 'Ã°Å¸ÂÂ¯';
+            const teamIcon = team.icon || '🏯';
             
             item.innerHTML = `
                 <div class="leaderboard-rank">${medal || rank}</div>
@@ -811,7 +811,7 @@ async function loadGallery() {
     try {
         const { data: submissions, error } = await supabaseClient
             .from('submissions')
-            .select('*, teams(team_name), challenges(name, points)')
+            .select('*, teams(team_name, icon), challenges(name, points)')
             .eq('status', 'approved')
             .order('created_at', { ascending: false });
         
@@ -847,7 +847,7 @@ function createGalleryCard(submission) {
     card.className = 'gallery-card';
     
     const submittedDate = new Date(submission.created_at).toLocaleString();
-    const teamIcon = submission.teams.icon || 'Ã°Å¸ÂÂ¯';
+    const teamIcon = submission.teams.icon || '🏯';
     
     card.innerHTML = `
         <img src="${submission.photo_url}" alt="Challenge photo" class="gallery-photo" onclick="window.open('${submission.photo_url}', '_blank')">
@@ -888,7 +888,7 @@ async function handleForgotPassword(e) {
         
         if (error) throw error;
         
-        showForgotPasswordMessage('â Password reset link sent to your email!', false);
+        showForgotPasswordMessage('✅ Password reset link sent to your email!', false);
         
         setTimeout(() => {
             closeForgotPasswordModal();
@@ -933,7 +933,7 @@ async function handleSetNewPassword(e) {
         
         if (error) throw error;
         
-        showSetNewPasswordMessage('â Password updated successfully!', false);
+        showSetNewPasswordMessage('✅ Password updated successfully!', false);
         
         setTimeout(async () => {
             // Sign out and clear all session data
@@ -998,7 +998,7 @@ function createTeamItem(team) {
     const item = document.createElement('div');
     item.className = 'team-item';
     
-    const teamIcon = team.icon || 'ð¯';
+    const teamIcon = team.icon || '🏯';
     
     item.innerHTML = `
         <div class="team-icon-display">${teamIcon}</div>
@@ -1008,7 +1008,7 @@ function createTeamItem(team) {
             <p><strong>Points:</strong> <span class="team-points">${team.points}</span></p>
         </div>
         <button class="btn-reset-password" onclick="openAdminResetPassword('${team.email}', '${team.team_name}')">
-            ð Reset Password
+            🔑 Reset Password
         </button>
     `;
     
@@ -1055,7 +1055,7 @@ async function handleAdminResetPassword(e) {
         if (error) throw error;
         
         showAdminResetPasswordMessage(
-            `â Password reset email sent to ${selectedTeamForReset}\n\nAlternatively, you can reset it in Supabase Dashboard:\n1. Go to Authentication > Users\n2. Find ${selectedTeamForReset}\n3. Click "..." > Reset Password`,
+            `✅ Password reset email sent to ${selectedTeamForReset}\n\nAlternatively, you can reset it in Supabase Dashboard:\n1. Go to Authentication > Users\n2. Find ${selectedTeamForReset}\n3. Click "..." > Reset Password`,
             false
         );
         
