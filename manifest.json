@@ -1,6 +1,6 @@
 {
-  "name": "Amazing Race Challenge - Japan",
-  "short_name": "Race Challenge",
+  "name": "Tokyo Quest - Japan Challenge",
+  "short_name": "Tokyo Quest",
   "description": "Team-based challenge competition app for Japan class trip",
   "start_url": "./",
   "display": "standalone",
