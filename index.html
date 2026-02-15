@@ -4,6 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Amazing Race Challenge App</title>
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#c41e3a">
+    
+    <!-- iOS PWA Support -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Race Challenge">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -59,7 +70,7 @@
                         <div class="icon-option" data-icon="🍣">🍣</div>
                         <div class="icon-option" data-icon="🎌">🎌</div>
                         <div class="icon-option" data-icon="🗻">🗻</div>
-                        <div class="icon-option" data-icon="🏮">🏮</div>
+                        <div class="icon-option" data-icon="🍮">🍮</div>
                     </div>
                     <input type="hidden" id="selectedIcon" value="🏯" required>
                 </div>
@@ -280,5 +291,20 @@
     <!-- Include Supabase client library -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="app.js"></script>
+    
+    <!-- Register Service Worker for PWA -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registered:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.log('ServiceWorker registration failed:', error);
+                    });
+            });
+        }
+    </script>
 </body>
 </html>
