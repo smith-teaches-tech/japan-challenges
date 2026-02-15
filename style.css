@@ -1,0 +1,1321 @@
+/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    /* Japan-themed gradient: red to pink */
+    background: linear-gradient(135deg, #c41e3a 0%, #ff6b9d 50%, #ffd4e5 100%);
+    min-height: 100vh;
+    padding: 10px;
+    position: relative;
+}
+
+/* Cherry Blossom Background Pattern */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        radial-gradient(circle at 20% 30%, rgba(255, 183, 197, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(255, 183, 197, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 40% 80%, rgba(255, 183, 197, 0.2) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+body > * {
+    position: relative;
+    z-index: 1;
+}
+
+/* Header with Mount Fuji Inspiration */
+header {
+    text-align: center;
+    color: white;
+    margin-bottom: 20px;
+    padding: 20px 10px;
+    background: linear-gradient(to bottom, rgba(196, 30, 58, 0.9) 0%, rgba(196, 30, 58, 0.7) 100%);
+    border-radius: 15px;
+    box-shadow: 0 8px 32px rgba(196, 30, 58, 0.4);
+    border: 3px solid rgba(255, 255, 255, 0.3);
+}
+
+header h1 {
+    font-size: 2em;
+    text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+    margin-bottom: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.user-info {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 8px 20px;
+    border-radius: 20px;
+    color: #c41e3a;
+    font-size: 0.9em;
+    display: inline-block;
+    margin-top: 10px;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border: 2px solid #ffb7c5;
+}
+
+/* Screen Management */
+.screen {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* Auth Container - Japan Style */
+.auth-container {
+    background: white;
+    padding: 30px 20px;
+    border-radius: 20px;
+    box-shadow: 0 15px 50px rgba(196, 30, 58, 0.3);
+    max-width: 400px;
+    margin: 0 auto;
+    border: 3px solid #ffb7c5;
+}
+
+.auth-container h2 {
+    text-align: center;
+    color: #c41e3a;
+    margin-bottom: 20px;
+    font-weight: 700;
+}
+
+.auth-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 12px;
+    border: 2px solid #ffb7c5;
+    background: white;
+    cursor: pointer;
+    border-radius: 8px;
+    font-size: 1em;
+    transition: all 0.3s;
+    min-height: 44px;
+    font-weight: 600;
+    color: #c41e3a;
+}
+
+.tab-btn.active {
+    background: linear-gradient(135deg, #c41e3a 0%, #e63946 100%);
+    color: white;
+    border-color: #c41e3a;
+}
+
+.auth-form input[type="text"],
+.auth-form input[type="email"],
+.auth-form input[type="password"] {
+    width: 100%;
+    padding: 14px;
+    margin-bottom: 15px;
+    border: 2px solid #ffb7c5;
+    border-radius: 8px;
+    font-size: 16px;
+    min-height: 48px;
+    transition: border-color 0.3s;
+}
+
+.auth-form input:focus {
+    outline: none;
+    border-color: #c41e3a;
+}
+
+/* Remember Me Checkbox */
+.remember-me {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+    padding: 10px 0;
+    min-height: 44px;
+}
+
+.remember-me input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    accent-color: #c41e3a;
+}
+
+.remember-me label {
+    cursor: pointer;
+    color: #666;
+    font-size: 0.95em;
+    user-select: none;
+}
+
+/* Team Icon Selector */
+.icon-selector {
+    margin-bottom: 20px;
+}
+
+.icon-selector label {
+    display: block;
+    color: #c41e3a;
+    font-weight: 600;
+    margin-bottom: 10px;
+    font-size: 0.95em;
+}
+
+.icon-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4 columns on mobile by default */
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.icon-option {
+    width: 100%;
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2em;
+    border: 3px solid #ffb7c5;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s;
+    background: white;
+}
+
+.icon-option:hover {
+    transform: scale(1.1);
+    border-color: #c41e3a;
+    background: #fff9fb;
+}
+
+.icon-option.active {
+    border-color: #c41e3a;
+    background: linear-gradient(135deg, #ffb7c5 0%, #ffd4e5 100%);
+    transform: scale(1.05);
+    box-shadow: 0 4px 15px rgba(196, 30, 58, 0.3);
+}
+
+/* Very small phones - 3 columns */
+@media (max-width: 360px) {
+    .icon-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .icon-option {
+        font-size: 1.8em;
+    }
+}
+
+.btn-primary {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #c41e3a 0%, #e63946 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1em;
+    cursor: pointer;
+    transition: all 0.3s;
+    min-height: 48px;
+    font-weight: 700;
+    box-shadow: 0 4px 15px rgba(196, 30, 58, 0.3);
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #a01729 0%, #c41e3a 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(196, 30, 58, 0.4);
+}
+
+.btn-primary:active {
+    transform: scale(0.98);
+}
+
+.btn-secondary {
+    padding: 14px 20px;
+    background: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+    min-height: 48px;
+    font-weight: 600;
+}
+
+.btn-secondary:hover {
+    background: #5a6268;
+    transform: translateY(-2px);
+}
+
+.btn-secondary:active {
+    transform: scale(0.98);
+}
+
+.message {
+    margin-top: 15px;
+    padding: 12px;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: 600;
+}
+
+.message.error {
+    background: #f8d7da;
+    color: #721c24;
+    border: 2px solid #f5c6cb;
+}
+
+.message.success {
+    background: #d4edda;
+    color: #155724;
+    border: 2px solid #c3e6cb;
+}
+
+.admin-link {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 0.9em;
+    padding: 10px;
+}
+
+.admin-link a {
+    color: #c41e3a;
+    text-decoration: none;
+    padding: 10px;
+    display: inline-block;
+    font-weight: 600;
+}
+
+.forgot-password-link {
+    text-align: center;
+    margin-top: 15px;
+    font-size: 0.9em;
+    padding: 10px;
+}
+
+.forgot-password-link a {
+    color: #c41e3a;
+    text-decoration: none;
+    padding: 10px;
+    display: inline-block;
+    font-weight: 600;
+}
+
+/* Navigation Tabs - Japan Style */
+.nav-tabs {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 20px;
+    background: white;
+    padding: 10px;
+    border-radius: 15px;
+    box-shadow: 0 8px 30px rgba(196, 30, 58, 0.2);
+    border: 3px solid #ffb7c5;
+}
+
+/* Admin has 5 buttons, teams have 4 */
+#adminScreen .nav-tabs {
+    grid-template-columns: repeat(5, 1fr);
+}
+
+/* Very small phones - stack navigation vertically */
+@media (max-width: 380px) {
+    .nav-tabs,
+    #adminScreen .nav-tabs {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+    
+    .nav-btn {
+        flex-direction: row !important;
+        justify-content: flex-start !important;
+        padding: 12px 15px !important;
+        gap: 10px !important;
+    }
+    
+    .nav-icon {
+        font-size: 1.3em !important;
+    }
+    
+    .nav-label {
+        font-size: 0.95em !important;
+        text-align: left;
+    }
+}
+
+.nav-btn {
+    padding: 12px 8px;
+    border: 2px solid transparent;
+    background: transparent;
+    cursor: pointer;
+    border-radius: 10px;
+    font-size: 0.9em;
+    transition: all 0.3s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    min-height: 60px;
+    color: #c41e3a;
+    font-weight: 600;
+}
+
+.nav-icon {
+    font-size: 1.5em;
+}
+
+.nav-label {
+    font-size: 0.85em;
+}
+
+/* Small screens - reduce padding and font sizes */
+@media (max-width: 420px) {
+    .nav-btn {
+        padding: 10px 4px;
+        min-height: 55px;
+    }
+    
+    .nav-icon {
+        font-size: 1.3em;
+    }
+    
+    .nav-label {
+        font-size: 0.75em;
+    }
+}
+
+.nav-btn.active {
+    background: linear-gradient(135deg, #c41e3a 0%, #e63946 100%);
+    color: white;
+    border-color: #c41e3a;
+}
+
+.nav-btn:hover {
+    background: #fff0f3;
+    border-color: #ffb7c5;
+}
+
+.nav-btn.active:hover {
+    background: linear-gradient(135deg, #c41e3a 0%, #e63946 100%);
+    border-color: #c41e3a;
+}
+
+.nav-btn:active {
+    transform: scale(0.95);
+}
+
+.logout-btn {
+    background: #dc3545 !important;
+    color: white !important;
+    border-color: #dc3545 !important;
+}
+
+.logout-btn:hover {
+    background: #c82333 !important;
+}
+
+/* Sections - Japan Theme */
+.section {
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 8px 30px rgba(196, 30, 58, 0.2);
+    min-height: 400px;
+    border: 3px solid #ffb7c5;
+}
+
+.section h2 {
+    color: #c41e3a;
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 1.5em;
+    font-weight: 700;
+}
+
+.section-subtitle {
+    text-align: center;
+    color: #666;
+    margin-bottom: 20px;
+    font-size: 0.9em;
+}
+
+/* Challenges Grid */
+.challenges-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 15px;
+}
+
+.challenge-card {
+    border: 3px solid #ffb7c5;
+    border-radius: 15px;
+    padding: 20px;
+    transition: all 0.3s;
+    background: linear-gradient(to bottom, #fff 0%, #fff9fb 100%);
+}
+
+.challenge-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(196, 30, 58, 0.2);
+    border-color: #c41e3a;
+}
+
+.challenge-card:active {
+    transform: scale(0.98);
+}
+
+.challenge-card h3 {
+    color: #c41e3a;
+    margin-bottom: 10px;
+    font-size: 1.2em;
+    font-weight: 700;
+}
+
+.challenge-card p {
+    color: #666;
+    margin-bottom: 15px;
+    line-height: 1.5;
+}
+
+.challenge-points {
+    display: inline-block;
+    background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+    color: #333;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    font-size: 0.9em;
+    box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+}
+
+.challenge-status {
+    padding: 10px;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 0.95em;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.status-pending {
+    background: #fff3cd;
+    color: #856404;
+    border: 2px solid #ffeaa7;
+}
+
+.status-approved {
+    background: #d4edda;
+    color: #155724;
+    border: 2px solid #c3e6cb;
+}
+
+.status-rejected {
+    background: #f8d7da;
+    color: #721c24;
+    border: 2px solid #f5c6cb;
+}
+
+.btn-upload {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: all 0.3s;
+    min-height: 48px;
+    font-weight: 700;
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+}
+
+.btn-upload:hover {
+    background: linear-gradient(135deg, #218838 0%, #1fa87a 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+}
+
+.btn-upload:active {
+    transform: scale(0.98);
+}
+
+.btn-upload:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Disabled Challenge Styling */
+.challenge-card.disabled {
+    opacity: 0.6;
+    background: #f5f5f5;
+    border-color: #ddd;
+}
+
+.challenge-card.disabled h3 {
+    color: #999;
+}
+
+.challenge-card.disabled p {
+    color: #999;
+}
+
+.challenge-locked {
+    background: #fff3cd;
+    color: #856404;
+    padding: 10px;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: bold;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border: 2px solid #ffeaa7;
+}
+
+/* Leaderboard - Japan Style */
+.leaderboard {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.leaderboard-item {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    margin-bottom: 10px;
+    background: #f8f9fa;
+    border-radius: 12px;
+    transition: all 0.3s;
+    border: 2px solid #e0e0e0;
+}
+
+.leaderboard-item:hover {
+    transform: scale(1.02);
+    box-shadow: 0 4px 15px rgba(196, 30, 58, 0.2);
+}
+
+.leaderboard-item:active {
+    transform: scale(0.98);
+}
+
+.leaderboard-item.first {
+    background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+    border-color: #ffd700;
+    box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+}
+
+.leaderboard-item.second {
+    background: linear-gradient(135deg, #c0c0c0 0%, #d9d9d9 100%);
+    border-color: #c0c0c0;
+}
+
+.leaderboard-item.third {
+    background: linear-gradient(135deg, #cd7f32 0%, #d4a574 100%);
+    border-color: #cd7f32;
+}
+
+.leaderboard-rank {
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-right: 15px;
+    min-width: 40px;
+}
+
+.leaderboard-icon {
+    font-size: 1.8em;
+    margin-right: 10px;
+}
+
+.leaderboard-name {
+    flex: 1;
+    font-size: 1.1em;
+    font-weight: 600;
+}
+
+.leaderboard-points {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #c41e3a;
+}
+
+/* Submissions Grid */
+.submissions-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 15px;
+}
+
+.submission-card {
+    border: 3px solid #ffb7c5;
+    border-radius: 15px;
+    padding: 20px;
+    background: linear-gradient(to bottom, #fff 0%, #fff9fb 100%);
+    box-shadow: 0 4px 15px rgba(196, 30, 58, 0.15);
+}
+
+.submission-card h4 {
+    color: #c41e3a;
+    margin-bottom: 10px;
+    font-size: 1.1em;
+    font-weight: 700;
+}
+
+.submission-info {
+    margin-bottom: 15px;
+}
+
+.submission-info p {
+    margin: 5px 0;
+    color: #666;
+    font-size: 0.9em;
+    word-break: break-word;
+}
+
+.submission-photo {
+    width: 100%;
+    max-height: 300px;
+    object-fit: cover;
+    border-radius: 12px;
+    margin-bottom: 15px;
+    cursor: pointer;
+    border: 3px solid #ffb7c5;
+    transition: transform 0.3s;
+}
+
+.submission-photo:hover {
+    transform: scale(1.02);
+}
+
+/* Video Support for Submissions and Gallery */
+video.submission-photo,
+video.gallery-photo {
+    object-fit: contain;
+    background: #000;
+}
+
+.submission-actions {
+    display: flex;
+    gap: 10px;
+}
+
+/* Mobile: Stack submission buttons vertically on very small screens */
+@media (max-width: 380px) {
+    .submission-actions {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .btn-approve,
+    .btn-reject {
+        width: 100%;
+    }
+}
+
+.btn-approve {
+    flex: 1;
+    padding: 14px;
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+    min-height: 48px;
+    font-weight: 700;
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+}
+
+.btn-approve:hover {
+    background: linear-gradient(135deg, #218838 0%, #1fa87a 100%);
+    transform: translateY(-2px);
+}
+
+.btn-approve:active {
+    transform: scale(0.98);
+}
+
+.btn-reject {
+    flex: 1;
+    padding: 14px;
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+    min-height: 48px;
+    font-weight: 700;
+    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+}
+
+.btn-reject:hover {
+    background: linear-gradient(135deg, #c82333 0%, #bd2130 100%);
+    transform: translateY(-2px);
+}
+
+.btn-reject:active {
+    transform: scale(0.98);
+}
+
+/* Modal - Japan Style */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(196, 30, 58, 0.5);
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+}
+
+.modal-content {
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    max-width: 500px;
+    width: 100%;
+    border: 3px solid #ffb7c5;
+    box-shadow: 0 15px 50px rgba(196, 30, 58, 0.4);
+}
+
+.modal-content h3 {
+    margin-bottom: 20px;
+    color: #c41e3a;
+    font-size: 1.3em;
+    font-weight: 700;
+}
+
+.modal-content input[type="file"] {
+    width: 100%;
+    padding: 15px;
+    margin-bottom: 10px;
+    border: 3px dashed #c41e3a;
+    border-radius: 10px;
+    cursor: pointer;
+    background: #fff9fb;
+    font-size: 14px;
+    transition: all 0.3s;
+}
+
+.modal-content input[type="file"]:hover {
+    background: #ffb7c5;
+    border-color: #a01729;
+}
+
+.file-input-hint {
+    text-align: center;
+    color: #c41e3a;
+    font-size: 0.85em;
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.modal-buttons button {
+    flex: 1;
+}
+
+/* Photo Gallery */
+.gallery-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 15px;
+}
+
+.gallery-card {
+    border: 3px solid #ffb7c5;
+    border-radius: 15px;
+    overflow: hidden;
+    background: white;
+    transition: all 0.3s;
+    box-shadow: 0 4px 15px rgba(196, 30, 58, 0.15);
+}
+
+.gallery-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(196, 30, 58, 0.3);
+    border-color: #c41e3a;
+}
+
+.gallery-card:active {
+    transform: scale(0.98);
+}
+
+.gallery-photo {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    cursor: pointer;
+    transition: transform 0.3s;
+}
+
+.gallery-photo:hover {
+    transform: scale(1.05);
+}
+
+.gallery-info {
+    padding: 15px;
+    background: linear-gradient(to bottom, #fff 0%, #fff9fb 100%);
+}
+
+.gallery-info h4 {
+    color: #c41e3a;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.gallery-info p {
+    margin: 5px 0;
+    color: #666;
+    font-size: 0.9em;
+}
+
+.gallery-date {
+    font-size: 0.85em;
+    color: #999;
+    margin-top: 10px;
+}
+
+/* Admin Challenges Management */
+.manage-challenges-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.add-challenge-container {
+    margin-bottom: 30px;
+    padding: 20px;
+    background: linear-gradient(to bottom, #fff 0%, #fff9fb 100%);
+    border: 3px solid #ffb7c5;
+    border-radius: 15px;
+}
+
+.add-challenge-form {
+    margin-top: 20px;
+    padding: 20px;
+    background: white;
+    border: 2px solid #ffb7c5;
+    border-radius: 10px;
+}
+
+.add-challenge-form h3 {
+    color: #c41e3a;
+    margin-bottom: 15px;
+    font-size: 1.1em;
+}
+
+.add-challenge-form input[type="text"],
+.add-challenge-form input[type="number"],
+.add-challenge-form textarea {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border: 2px solid #ffb7c5;
+    border-radius: 8px;
+    font-size: 16px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.add-challenge-form textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+.add-challenge-form input:focus,
+.add-challenge-form textarea:focus {
+    outline: none;
+    border-color: #c41e3a;
+}
+
+.form-check {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+    padding: 10px 0;
+}
+
+.form-check input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    accent-color: #c41e3a;
+}
+
+.form-check label {
+    cursor: pointer;
+    color: #666;
+    font-size: 0.95em;
+    user-select: none;
+}
+
+.manage-challenge-item {
+    background: linear-gradient(to bottom, #fff 0%, #fff9fb 100%);
+    border: 3px solid #ffb7c5;
+    border-radius: 15px;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    transition: all 0.3s;
+}
+
+.manage-challenge-item:hover {
+    box-shadow: 0 4px 15px rgba(196, 30, 58, 0.2);
+    border-color: #c41e3a;
+}
+
+.manage-challenge-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.manage-challenge-info h4 {
+    color: #c41e3a;
+    margin-bottom: 5px;
+    font-size: 1em;
+    font-weight: 700;
+}
+
+.manage-challenge-info p {
+    color: #666;
+    font-size: 0.85em;
+    margin-bottom: 5px;
+    line-height: 1.4;
+    word-break: break-word;
+}
+
+/* Mobile: Ensure toggle switch is visible */
+@media (max-width: 500px) {
+    .manage-challenge-item {
+        gap: 10px;
+    }
+    
+    .manage-challenge-info h4 {
+        font-size: 0.95em;
+    }
+    
+    .manage-challenge-info p {
+        font-size: 0.8em;
+    }
+}
+
+.toggle-switch {
+    position: relative;
+    width: 60px;
+    height: 34px;
+    flex-shrink: 0;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .toggle-slider {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+}
+
+input:checked + .toggle-slider:before {
+    transform: translateX(26px);
+}
+
+/* Teams List - Admin Panel */
+.teams-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.team-item {
+    background: linear-gradient(to bottom, #fff 0%, #fff9fb 100%);
+    border: 3px solid #ffb7c5;
+    border-radius: 15px;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    transition: all 0.3s;
+}
+
+.team-item:hover {
+    box-shadow: 0 4px 15px rgba(196, 30, 58, 0.2);
+    border-color: #c41e3a;
+}
+
+.team-icon-display {
+    font-size: 2.5em;
+    min-width: 50px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.team-item-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.team-item-info h4 {
+    color: #c41e3a;
+    margin-bottom: 5px;
+    font-size: 1.1em;
+    font-weight: 700;
+}
+
+.team-item-info p {
+    color: #666;
+    font-size: 0.85em;
+    margin: 3px 0;
+    word-break: break-word;
+}
+
+.team-points {
+    color: #c41e3a;
+    font-weight: bold;
+}
+
+.btn-reset-password {
+    padding: 12px 20px;
+    background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+    color: #333;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+    min-height: 48px;
+    font-weight: 700;
+    white-space: nowrap;
+    box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3);
+    flex-shrink: 0;
+}
+
+.btn-reset-password:hover {
+    background: linear-gradient(135deg, #e0a800 0%, #e68900 100%);
+    transform: translateY(-2px);
+}
+
+.btn-reset-password:active {
+    transform: scale(0.98);
+}
+
+/* Mobile: Stack team items vertically */
+@media (max-width: 500px) {
+    .team-item {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+    }
+    
+    .team-icon-display {
+        font-size: 3em;
+        margin: 0 auto;
+    }
+    
+    .team-item-info {
+        text-align: center;
+    }
+    
+    .btn-reset-password {
+        width: 100%;
+        white-space: normal;
+    }
+}
+
+/* Password Reset Modal Specific Styles */
+.modal-description {
+    color: #666;
+    margin-bottom: 20px;
+    line-height: 1.5;
+    font-size: 0.95em;
+}
+
+.password-hint {
+    color: #666;
+    font-size: 0.85em;
+    margin-top: -10px;
+    margin-bottom: 15px;
+    font-style: italic;
+}
+
+#forgotPasswordModal input[type="email"],
+#adminResetPasswordModal input[type="password"],
+#setNewPasswordModal input[type="password"] {
+    width: 100%;
+    padding: 14px;
+    margin-bottom: 15px;
+    border: 2px solid #ffb7c5;
+    border-radius: 8px;
+    font-size: 16px;
+    min-height: 48px;
+    transition: border-color 0.3s;
+}
+
+#forgotPasswordModal input:focus,
+#adminResetPasswordModal input:focus,
+#setNewPasswordModal input:focus {
+    outline: none;
+    border-color: #c41e3a;
+}
+
+/* Placeholder styling - light and italic */
+#forgotPasswordModal input::placeholder,
+#adminResetPasswordModal input::placeholder,
+#setNewPasswordModal input::placeholder {
+    color: #999;
+    font-style: italic;
+    font-weight: 300;
+}
+
+/* ============================================
+   DESKTOP RESPONSIVE (TABLETS & UP)
+   ============================================ */
+@media (min-width: 768px) {
+    body {
+        padding: 20px;
+    }
+
+    header h1 {
+        font-size: 2.5em;
+    }
+
+    .user-info {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        margin-top: 0;
+    }
+
+    header {
+        position: relative;
+        margin-bottom: 30px;
+        padding: 30px 20px;
+    }
+
+    .auth-container {
+        padding: 40px;
+    }
+
+    .nav-tabs {
+        grid-template-columns: repeat(4, 1fr);
+    }
+    
+    #adminScreen .nav-tabs {
+        grid-template-columns: repeat(5, 1fr);
+    }
+
+    .nav-btn {
+        flex-direction: row;
+        justify-content: center;
+        gap: 8px;
+        min-height: 48px;
+    }
+
+    .nav-icon {
+        font-size: 1.2em;
+    }
+
+    .nav-label {
+        font-size: 1em;
+    }
+
+    .section {
+        padding: 30px;
+    }
+
+    .challenges-grid {
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+    }
+
+    .submissions-grid {
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 20px;
+    }
+
+    .gallery-grid {
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+    }
+
+    .manage-challenges-list {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .manage-challenge-item {
+        padding: 20px;
+    }
+    
+    /* Icon grid - 6 columns on desktop */
+    .icon-grid {
+        grid-template-columns: repeat(6, 1fr);
+    }
+}
+
+/* Large Desktop */
+@media (min-width: 1024px) {
+    .challenges-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .gallery-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}

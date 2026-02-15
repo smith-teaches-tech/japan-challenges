@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Amazing Race Challenge App</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <h1>🗻 Amazing Race Challenge</h1>
+        <div id="userInfo" class="user-info"></div>
+    </header>
+
+    <!-- Login/Signup Screen -->
+    <div id="authScreen" class="screen">
+        <div class="auth-container">
+            <h2>Team Login</h2>
+            <div class="auth-tabs">
+                <button class="tab-btn active" onclick="switchTab('login')">Login</button>
+                <button class="tab-btn" onclick="switchTab('signup')">Sign Up</button>
+            </div>
+            
+            <!-- Login Form -->
+            <form id="loginForm" class="auth-form">
+                <input type="email" id="loginEmail" placeholder="Team Email" required>
+                <input type="password" id="loginPassword" placeholder="Password" required>
+                <div class="remember-me">
+                    <input type="checkbox" id="rememberMe" checked>
+                    <label for="rememberMe">Remember me (stay signed in)</label>
+                </div>
+                <button type="submit" class="btn-primary">Login</button>
+            </form>
+            
+            <!-- Forgot Password Link -->
+            <div class="forgot-password-link">
+                <a href="#" onclick="showForgotPassword(); return false;">Forgot Password?</a>
+            </div>
+
+            <!-- Signup Form -->
+            <form id="signupForm" class="auth-form hidden">
+                <input type="text" id="signupTeamName" placeholder="Team Name" required>
+                <input type="email" id="signupEmail" placeholder="Team Email" required>
+                <input type="password" id="signupPassword" placeholder="Password (min 6 characters)" required minlength="6">
+                
+                <!-- Team Icon Selector -->
+                <div class="icon-selector">
+                    <label>Choose Your Team Icon:</label>
+                    <div class="icon-grid">
+                        <div class="icon-option" data-icon="🏯">🏯</div>
+                        <div class="icon-option" data-icon="🍜">🍜</div>
+                        <div class="icon-option" data-icon="⛩️">⛩️</div>
+                        <div class="icon-option" data-icon="🌸">🌸</div>
+                        <div class="icon-option" data-icon="🦊">🦊</div>
+                        <div class="icon-option" data-icon="🍱">🍱</div>
+                        <div class="icon-option" data-icon="🚄">🚄</div>
+                        <div class="icon-option" data-icon="🗾">🗾</div>
+                        <div class="icon-option" data-icon="🍣">🍣</div>
+                        <div class="icon-option" data-icon="🎌">🎌</div>
+                        <div class="icon-option" data-icon="🗻">🗻</div>
+                        <div class="icon-option" data-icon="🏮">🏮</div>
+                    </div>
+                    <input type="hidden" id="selectedIcon" value="🏯" required>
+                </div>
+                
+                <button type="submit" class="btn-primary">Create Team</button>
+            </form>
+
+            <div id="authMessage" class="message"></div>
+            
+            <!-- Admin Login Link -->
+            <div class="admin-link">
+                <a href="#" onclick="showAdminLogin(); return false;">Admin Login</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main App Screen (for teams) -->
+    <div id="appScreen" class="screen hidden">
+        <nav class="nav-tabs">
+            <button class="nav-btn active" onclick="showSection('challenges')">
+                <span class="nav-icon">🎯</span>
+                <span class="nav-label">Challenges</span>
+            </button>
+            <button class="nav-btn" onclick="showSection('gallery')">
+                <span class="nav-icon">📸</span>
+                <span class="nav-label">Gallery</span>
+            </button>
+            <button class="nav-btn" onclick="showSection('leaderboard')">
+                <span class="nav-icon">🏆</span>
+                <span class="nav-label">Leaderboard</span>
+            </button>
+            <button class="nav-btn logout-btn" onclick="logout()">
+                <span class="nav-icon">🚪</span>
+                <span class="nav-label">Logout</span>
+            </button>
+        </nav>
+
+        <!-- Challenges Section -->
+        <div id="challengesSection" class="section">
+            <h2>Available Challenges</h2>
+            <div id="challengesList" class="challenges-grid"></div>
+        </div>
+
+        <!-- Gallery Section -->
+        <div id="gallerySection" class="section hidden">
+            <h2>📸 Photo Gallery</h2>
+            <p class="section-subtitle">All approved challenge submissions</p>
+            <div id="galleryList" class="gallery-grid"></div>
+        </div>
+
+        <!-- Leaderboard Section -->
+        <div id="leaderboardSection" class="section hidden">
+            <h2>🏆 Leaderboard</h2>
+            <div id="leaderboardList" class="leaderboard"></div>
+        </div>
+    </div>
+
+    <!-- Admin Screen -->
+    <div id="adminScreen" class="screen hidden">
+        <nav class="nav-tabs">
+            <button class="nav-btn active" onclick="showAdminSection('pending')">
+                <span class="nav-icon">⏳</span>
+                <span class="nav-label">Pending</span>
+            </button>
+            <button class="nav-btn" onclick="showAdminSection('teams')">
+                <span class="nav-icon">👥</span>
+                <span class="nav-label">Teams</span>
+            </button>
+            <button class="nav-btn" onclick="showAdminSection('manage')">
+                <span class="nav-icon">🎯</span>
+                <span class="nav-label">Manage</span>
+            </button>
+            <button class="nav-btn" onclick="showAdminSection('leaderboard')">
+                <span class="nav-icon">🏆</span>
+                <span class="nav-label">Board</span>
+            </button>
+            <button class="nav-btn logout-btn" onclick="logout()">
+                <span class="nav-icon">🚪</span>
+                <span class="nav-label">Logout</span>
+            </button>
+        </nav>
+
+        <!-- Pending Submissions -->
+        <div id="adminPendingSection" class="section">
+            <h2>Pending Submissions</h2>
+            <div id="pendingSubmissions" class="submissions-grid"></div>
+        </div>
+
+        <!-- Teams Management -->
+        <div id="adminTeamsSection" class="section hidden">
+            <h2>👥 Team Management</h2>
+            <p class="section-subtitle">View all teams and reset passwords</p>
+            <div id="teamsList" class="teams-list"></div>
+        </div>
+
+        <!-- Manage Challenges -->
+        <div id="adminManageSection" class="section hidden">
+            <h2>🎯 Manage Challenges</h2>
+            <p class="section-subtitle">Enable/disable challenges as teams progress</p>
+            
+            <!-- Add New Challenge Form -->
+            <div class="add-challenge-container">
+                <button class="btn-primary" onclick="toggleAddChallengeForm()">➕ Add New Challenge</button>
+                
+                <form id="addChallengeForm" class="add-challenge-form hidden">
+                    <h3>Create New Challenge</h3>
+                    <input type="text" id="newChallengeName" placeholder="Challenge Name" required>
+                    <textarea id="newChallengeDescription" placeholder="Challenge Description" rows="3" required></textarea>
+                    <input type="number" id="newChallengePoints" placeholder="Base Points" min="1" required>
+                    <div class="form-check">
+                        <input type="checkbox" id="newChallengeEnabled">
+                        <label for="newChallengeEnabled">Enable immediately (teams can see it now)</label>
+                    </div>
+                    <div class="modal-buttons">
+                        <button type="button" class="btn-primary" onclick="createChallenge()">Create Challenge</button>
+                        <button type="button" class="btn-secondary" onclick="toggleAddChallengeForm()">Cancel</button>
+                    </div>
+                </form>
+                <div id="addChallengeMessage" class="message hidden"></div>
+            </div>
+            
+            <div id="manageChallengesList" class="manage-challenges-list"></div>
+        </div>
+
+        <!-- Admin Leaderboard -->
+        <div id="adminLeaderboardSection" class="section hidden">
+            <h2>🏆 Leaderboard</h2>
+            <div id="adminLeaderboardList" class="leaderboard"></div>
+        </div>
+    </div>
+
+    <!-- Photo Upload Modal -->
+    <div id="uploadModal" class="modal hidden">
+        <div class="modal-content">
+            <h3 id="modalTitle">Upload Photo</h3>
+            <form id="uploadForm">
+                <!-- Camera/file input with mobile camera access -->
+                <input type="file" 
+                       id="photoInput" 
+                       accept="image/*,video/*" 
+                       capture="environment"
+                       required>
+                <div class="file-input-hint">📷 Tap to take photo/video or choose from gallery</div>
+                <div class="modal-buttons">
+                    <button type="submit" class="btn-primary">Submit Photo</button>
+                    <button type="button" class="btn-secondary" onclick="closeUploadModal()">Cancel</button>
+                </div>
+            </form>
+            <div id="uploadMessage" class="message"></div>
+        </div>
+    </div>
+
+    <!-- Set New Password Modal (appears after clicking reset link) -->
+    <div id="setNewPasswordModal" class="modal hidden">
+        <div class="modal-content">
+            <h3>Set Your New Password</h3>
+            <p class="modal-description">Enter your new password below.</p>
+            <form id="setNewPasswordForm">
+                <input type="password" 
+                       id="newPassword" 
+                       placeholder="New Password" 
+                       minlength="6"
+                       required>
+                <input type="password" 
+                       id="confirmPassword" 
+                       placeholder="Confirm New Password" 
+                       minlength="6"
+                       required>
+                <div class="password-hint">Minimum 6 characters</div>
+                <div class="modal-buttons">
+                    <button type="submit" class="btn-primary">Update Password</button>
+                </div>
+            </form>
+            <div id="setNewPasswordMessage" class="message"></div>
+        </div>
+    </div>
+
+    <!-- Forgot Password Modal -->
+    <div id="forgotPasswordModal" class="modal hidden">
+        <div class="modal-content">
+            <h3>Reset Your Password</h3>
+            <p class="modal-description">Enter your team email and we'll send you a password reset link.</p>
+            <form id="forgotPasswordForm">
+                <input type="email" 
+                       id="forgotPasswordEmail" 
+                       placeholder="Team Email" 
+                       required>
+                <div class="modal-buttons">
+                    <button type="submit" class="btn-primary">Send Reset Link</button>
+                    <button type="button" class="btn-secondary" onclick="closeForgotPasswordModal()">Cancel</button>
+                </div>
+            </form>
+            <div id="forgotPasswordMessage" class="message"></div>
+        </div>
+    </div>
+
+    <!-- Admin Reset Password Modal -->
+    <div id="adminResetPasswordModal" class="modal hidden">
+        <div class="modal-content">
+            <h3 id="resetPasswordTitle">Reset Team Password</h3>
+            <p class="modal-description">Enter a new temporary password for <strong id="resetTeamName"></strong></p>
+            <form id="adminResetPasswordForm">
+                <input type="password" 
+                       id="newTempPassword" 
+                       placeholder="New Temporary Password" 
+                       minlength="6"
+                       required>
+                <div class="password-hint">Minimum 6 characters. Team will use this to log in.</div>
+                <div class="modal-buttons">
+                    <button type="submit" class="btn-primary">Reset Password</button>
+                    <button type="button" class="btn-secondary" onclick="closeAdminResetPasswordModal()">Cancel</button>
+                </div>
+            </form>
+            <div id="adminResetPasswordMessage" class="message"></div>
+        </div>
+    </div>
+
+    <!-- Include Supabase client library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="app.js"></script>
+</body>
+</html>
