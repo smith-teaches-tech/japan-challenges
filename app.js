@@ -16,6 +16,7 @@ let currentTeam = null;
 let isAdmin = false;
 let selectedChallenge = null;
 let selectedTeamForReset = null;
+let deferredInstallPrompt = null; // For PWA install
 
 // ======================
 // INITIALIZATION
@@ -33,6 +34,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     // Set up icon selector
     setupIconSelector();
+    
+    // Set up install button
+    setupInstallButton();
     
     // Check for password reset (if user clicked reset link in email)
     const hashParams = new URLSearchParams(window.location.hash.substring(1));
@@ -83,6 +87,66 @@ function setupIconSelector() {
     // Set first icon as default active
     if (iconOptions.length > 0) {
         iconOptions[0].classList.add('active');
+    }
+}
+
+// ======================
+// PWA INSTALL BUTTON
+// ======================
+function setupInstallButton() {
+    const installPrompt = document.getElementById('installPrompt');
+    const installButton = document.getElementById('installButton');
+    
+    // Listen for the install prompt event
+    window.addEventListener('beforeinstallprompt', (e) => {
+        console.log('beforeinstallprompt fired');
+        // Prevent the default prompt
+        e.preventDefault();
+        // Save the event for later
+        deferredInstallPrompt = e;
+        // Show our custom install button
+        installPrompt.classList.remove('hidden');
+    });
+    
+    // Handle install button click
+    installButton.addEventListener('click', async () => {
+        if (!deferredInstallPrompt) {
+            console.log('No install prompt available');
+            return;
+        }
+        
+        // Show the install prompt
+        deferredInstallPrompt.prompt();
+        
+        // Wait for user response
+        const { outcome } = await deferredInstallPrompt.userChoice;
+        console.log('Install outcome:', outcome);
+        
+        // Hide the button regardless of outcome
+        installPrompt.classList.add('hidden');
+        
+        // Clear the prompt
+        deferredInstallPrompt = null;
+    });
+    
+    // Detect if app is already installed
+    window.addEventListener('appinstalled', () => {
+        console.log('App installed successfully');
+        installPrompt.classList.add('hidden');
+        deferredInstallPrompt = null;
+    });
+    
+    // For iOS - show instructions since beforeinstallprompt doesn't work
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+    
+    if (isIOS && !isStandalone) {
+        // Show iOS-specific instructions
+        installButton.textContent = '📱 Add to Home Screen';
+        installButton.addEventListener('click', () => {
+            alert('To install:\n\n1. Tap the Share button (⬆️)\n2. Scroll down\n3. Tap "Add to Home Screen"\n4. Tap "Add"');
+        });
+        installPrompt.classList.remove('hidden');
     }
 }
 
