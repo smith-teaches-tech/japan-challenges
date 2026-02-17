@@ -16,7 +16,7 @@ let currentTeam = null;
 let isAdmin = false;
 let selectedChallenge = null;
 let selectedTeamForReset = null;
-let deferredInstallPrompt = null; // For PWA install
+let deferredInstallPrompt = null;
 
 // ======================
 // INITIALIZATION
@@ -32,6 +32,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('adminResetPasswordForm').addEventListener('submit', handleAdminResetPassword);
     document.getElementById('setNewPasswordForm').addEventListener('submit', handleSetNewPassword);
     
+    // Show selected file name when user picks a file
+    document.getElementById('photoInput').addEventListener('change', function() {
+        const nameEl = document.getElementById('selectedFileName');
+        if (this.files[0]) {
+            const sizeMB = (this.files[0].size / (1024 * 1024)).toFixed(1);
+            nameEl.textContent = '✅ ' + this.files[0].name + ' (' + sizeMB + ' MB)';
+        } else {
+            nameEl.textContent = '';
+        }
+    });
+    
     // Set up icon selector
     setupIconSelector();
     
@@ -41,7 +52,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Check for password reset (if user clicked reset link in email)
     const hashParams = new URLSearchParams(window.location.hash.substring(1));
     if (hashParams.get('type') === 'recovery') {
-        // User clicked password reset link - show set new password modal
         document.getElementById('authScreen').classList.add('hidden');
         document.getElementById('setNewPasswordModal').classList.remove('hidden');
         return;
@@ -50,24 +60,60 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Check if user is already logged in
     const { data: { user } } = await supabaseClient.auth.getUser();
     if (user) {
-        // Check if user chose to be remembered
-        const shouldRemember = sessionStorage.getItem('staySignedIn');
+        // FIX: Use localStorage (persists after app is closed) not sessionStorage
+        const staySignedIn = localStorage.getItem('staySignedIn');
         
-        if (shouldRemember === null) {
-            // No flag means session expired (new browser session)
-            // Sign them out since they didn't choose "Remember Me"
-            await supabaseClient.auth.signOut();
-            console.log('Session expired - user not remembered');
-        } else {
-            // User is remembered, proceed with login
+        if (staySignedIn === 'true' || staySignedIn === 'session-only') {
+            // Valid flag found — restore session
             currentUser = user;
             await initializeApp();
+        } else {
+            // No flag — sign out for safety
+            await supabaseClient.auth.signOut();
+            console.log('No stay-signed-in flag — showing login');
         }
     }
 });
 
 // ======================
-// AUTHENTICATION
+// PASSWORD VISIBILITY TOGGLE
+// ======================
+function togglePassword(inputId, btn) {
+    const input = document.getElementById(inputId);
+    if (input.type === 'password') {
+        input.type = 'text';
+        btn.textContent = '🙈';
+        // Auto-hide after 3 seconds for security
+        setTimeout(() => {
+            if (input.type === 'text') {
+                input.type = 'password';
+                btn.textContent = '👁️';
+            }
+        }, 3000);
+    } else {
+        input.type = 'password';
+        btn.textContent = '👁️';
+    }
+}
+
+// ======================
+// CAMERA / GALLERY TRIGGER
+// ======================
+function triggerCapture(captureMode) {
+    const input = document.getElementById('photoInput');
+    if (captureMode) {
+        input.setAttribute('capture', captureMode);
+    } else {
+        input.removeAttribute('capture');
+    }
+    // Reset so change event fires even if same file picked
+    input.value = '';
+    document.getElementById('selectedFileName').textContent = '';
+    input.click();
+}
+
+// ======================
+// ICON SELECTOR
 // ======================
 function setupIconSelector() {
     const iconOptions = document.querySelectorAll('.icon-option');
@@ -75,16 +121,12 @@ function setupIconSelector() {
     
     iconOptions.forEach(option => {
         option.addEventListener('click', () => {
-            // Remove active class from all
             iconOptions.forEach(opt => opt.classList.remove('active'));
-            // Add active class to clicked
             option.classList.add('active');
-            // Update hidden input
             selectedIconInput.value = option.dataset.icon;
         });
     });
     
-    // Set first icon as default active
     if (iconOptions.length > 0) {
         iconOptions[0].classList.add('active');
     }
@@ -97,51 +139,36 @@ function setupInstallButton() {
     const installPrompt = document.getElementById('installPrompt');
     const installButton = document.getElementById('installButton');
     
-    // Listen for the install prompt event
     window.addEventListener('beforeinstallprompt', (e) => {
         console.log('beforeinstallprompt fired');
-        // Prevent the default prompt
         e.preventDefault();
-        // Save the event for later
         deferredInstallPrompt = e;
-        // Show our custom install button
         installPrompt.classList.remove('hidden');
     });
     
-    // Handle install button click
     installButton.addEventListener('click', async () => {
         if (!deferredInstallPrompt) {
             console.log('No install prompt available');
             return;
         }
-        
-        // Show the install prompt
         deferredInstallPrompt.prompt();
-        
-        // Wait for user response
         const { outcome } = await deferredInstallPrompt.userChoice;
         console.log('Install outcome:', outcome);
-        
-        // Hide the button regardless of outcome
         installPrompt.classList.add('hidden');
-        
-        // Clear the prompt
         deferredInstallPrompt = null;
     });
     
-    // Detect if app is already installed
     window.addEventListener('appinstalled', () => {
         console.log('App installed successfully');
         installPrompt.classList.add('hidden');
         deferredInstallPrompt = null;
     });
     
-    // For iOS - show instructions since beforeinstallprompt doesn't work
+    // iOS — show share instructions
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
     
     if (isIOS && !isStandalone) {
-        // Show iOS-specific instructions
         installButton.textContent = '📱 Add to Home Screen';
         installButton.addEventListener('click', () => {
             alert('To install:\n\n1. Tap the Share button (⬆️)\n2. Scroll down\n3. Tap "Add to Home Screen"\n4. Tap "Add"');
@@ -150,6 +177,9 @@ function setupInstallButton() {
     }
 }
 
+// ======================
+// TAB SWITCHING
+// ======================
 function switchTab(tab) {
     const loginForm = document.getElementById('loginForm');
     const signupForm = document.getElementById('signupForm');
@@ -170,6 +200,9 @@ function switchTab(tab) {
     document.getElementById('authMessage').textContent = '';
 }
 
+// ======================
+// AUTHENTICATION
+// ======================
 async function handleLogin(e) {
     e.preventDefault();
     const email = document.getElementById('loginEmail').value;
@@ -186,15 +219,13 @@ async function handleLogin(e) {
         
         if (error) throw error;
         
-        
-        // Set session persistence flag
+        // FIX: Use localStorage so flag survives app close
         if (rememberMe) {
-            // Mark that user wants to stay signed in
-            sessionStorage.setItem('staySignedIn', 'true');
+            localStorage.setItem('staySignedIn', 'true');
         } else {
-            // Don't set the flag - session will be cleared on browser close
-            sessionStorage.setItem('staySignedIn', 'session-only');
+            localStorage.setItem('staySignedIn', 'session-only');
         }
+        
         currentUser = data.user;
         await initializeApp();
         
@@ -213,7 +244,6 @@ async function handleSignup(e) {
     showAuthMessage('Creating team...', false);
     
     try {
-        // Create auth user
         const { data: authData, error: authError } = await supabaseClient.auth.signUp({
             email,
             password
@@ -221,7 +251,7 @@ async function handleSignup(e) {
         
         if (authError) throw authError;
         
-        // Create team entry in database
+        // Insert team record BEFORE initializing app
         const { error: teamError } = await supabaseClient
             .from('teams')
             .insert([
@@ -230,8 +260,15 @@ async function handleSignup(e) {
         
         if (teamError) throw teamError;
         
-        showAuthMessage('Team created! You can now login.', false);
-        setTimeout(() => switchTab('login'), 2000);
+        // Email confirmation is OFF — user has a live session immediately
+        // So log them straight in instead of sending back to login tab
+        showAuthMessage('Team created! Logging you in...', false);
+        localStorage.setItem('staySignedIn', 'true');
+        currentUser = authData.user;
+        
+        setTimeout(async () => {
+            await initializeApp();
+        }, 1000);
         
     } catch (error) {
         showAuthMessage('Signup failed: ' + error.message, true);
@@ -244,7 +281,7 @@ function showAdminLogin() {
     
     if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
         isAdmin = true;
-        sessionStorage.setItem('staySignedIn', 'true'); // Admin always stays signed in
+        localStorage.setItem('staySignedIn', 'true'); // FIX: localStorage
         document.getElementById('authScreen').classList.add('hidden');
         document.getElementById('adminScreen').classList.remove('hidden');
         updateUserInfo('Admin');
@@ -256,7 +293,7 @@ function showAdminLogin() {
 
 async function logout() {
     await supabaseClient.auth.signOut();
-    sessionStorage.removeItem('staySignedIn'); // Clear the persistence flag
+    localStorage.removeItem('staySignedIn'); // FIX: localStorage
     currentUser = null;
     currentTeam = null;
     isAdmin = false;
@@ -266,7 +303,6 @@ async function logout() {
     document.getElementById('adminScreen').classList.add('hidden');
     document.getElementById('userInfo').textContent = '';
     
-    // Clear forms
     document.getElementById('loginForm').reset();
     document.getElementById('signupForm').reset();
 }
@@ -281,10 +317,9 @@ function showAuthMessage(message, isError) {
 // APP INITIALIZATION
 // ======================
 async function initializeApp() {
-    // Check if this is admin
     if (currentUser.email === ADMIN_EMAIL) {
         isAdmin = true;
-        sessionStorage.setItem('staySignedIn', 'true'); // Admin always stays signed in
+        localStorage.setItem('staySignedIn', 'true'); // FIX: localStorage
         document.getElementById('authScreen').classList.add('hidden');
         document.getElementById('adminScreen').classList.remove('hidden');
         updateUserInfo('Admin');
@@ -292,7 +327,6 @@ async function initializeApp() {
         return;
     }
     
-    // Regular team user
     try {
         const { data, error } = await supabaseClient
             .from('teams')
@@ -302,12 +336,10 @@ async function initializeApp() {
         
         if (error) {
             console.error('Team query error:', error);
-            console.error('Looking for email:', currentUser.email);
             throw error;
         }
         
         if (!data) {
-            console.error('No team found for email:', currentUser.email);
             throw new Error('No team record found for this email');
         }
         
@@ -323,7 +355,6 @@ async function initializeApp() {
     } catch (error) {
         console.error('Error loading team:', error);
         showAuthMessage('Error loading team data: ' + error.message, true);
-        // Sign them out so they can try again
         await supabaseClient.auth.signOut();
     }
 }
@@ -338,19 +369,13 @@ function updateUserInfo(name) {
 // NAVIGATION
 // ======================
 function showSection(section) {
-    // Update nav buttons
     const buttons = document.querySelectorAll('#appScreen .nav-btn');
     buttons.forEach(btn => btn.classList.remove('active'));
     
-    if (section === 'challenges') {
-        buttons[0].classList.add('active');
-    } else if (section === 'gallery') {
-        buttons[1].classList.add('active');
-    } else if (section === 'leaderboard') {
-        buttons[2].classList.add('active');
-    }
+    if (section === 'challenges') buttons[0].classList.add('active');
+    else if (section === 'gallery') buttons[1].classList.add('active');
+    else if (section === 'leaderboard') buttons[2].classList.add('active');
     
-    // Show selected section
     document.getElementById('challengesSection').classList.add('hidden');
     document.getElementById('gallerySection').classList.add('hidden');
     document.getElementById('leaderboardSection').classList.add('hidden');
@@ -369,21 +394,14 @@ function showSection(section) {
 function showAdminSection(section) {
     console.log('showAdminSection called:', section);
     
-    // Update nav buttons
     const buttons = document.querySelectorAll('#adminScreen .nav-btn');
     buttons.forEach(btn => btn.classList.remove('active'));
     
-    if (section === 'pending') {
-        buttons[0].classList.add('active');
-    } else if (section === 'teams') {
-        buttons[1].classList.add('active');
-    } else if (section === 'manage') {
-        buttons[2].classList.add('active');
-    } else if (section === 'leaderboard') {
-        buttons[3].classList.add('active');
-    }
+    if (section === 'pending') buttons[0].classList.add('active');
+    else if (section === 'teams') buttons[1].classList.add('active');
+    else if (section === 'manage') buttons[2].classList.add('active');
+    else if (section === 'leaderboard') buttons[3].classList.add('active');
     
-    // Show selected section
     document.getElementById('adminPendingSection').classList.add('hidden');
     document.getElementById('adminTeamsSection').classList.add('hidden');
     document.getElementById('adminManageSection').classList.add('hidden');
@@ -409,7 +427,6 @@ function showAdminSection(section) {
 // ======================
 async function loadChallenges() {
     try {
-        // Get all challenges
         const { data: challenges, error: challengesError } = await supabaseClient
             .from('challenges')
             .select('*')
@@ -417,7 +434,6 @@ async function loadChallenges() {
         
         if (challengesError) throw challengesError;
         
-        // Get team's submissions
         const { data: submissions, error: submissionsError } = await supabaseClient
             .from('submissions')
             .select('*')
@@ -425,13 +441,11 @@ async function loadChallenges() {
         
         if (submissionsError) throw submissionsError;
         
-        // Create lookup for submissions by challenge_id
         const submissionMap = {};
         submissions.forEach(sub => {
             submissionMap[sub.challenge_id] = sub;
         });
         
-        // Render challenges
         const container = document.getElementById('challengesList');
         container.innerHTML = '';
         
@@ -450,7 +464,6 @@ function createChallengeCard(challenge, submission) {
     const card = document.createElement('div');
     card.className = 'challenge-card';
     
-    // Add disabled class if challenge is not enabled
     if (!challenge.enabled) {
         card.classList.add('disabled');
     }
@@ -459,8 +472,7 @@ function createChallengeCard(challenge, submission) {
     let buttonHTML = '';
     
     if (!challenge.enabled) {
-        // Challenge is disabled/locked
-        statusHTML = '<div class="challenge-locked">🔒 Locked</div>';
+        statusHTML = '<div class="challenge-locked">🔑 Locked</div>';
         buttonHTML = '<button class="btn-upload" disabled>Locked</button>';
     } else if (submission) {
         if (submission.status === 'pending') {
@@ -493,10 +505,11 @@ function createChallengeCard(challenge, submission) {
 // ======================
 function openUploadModal(challengeId, challengeName) {
     selectedChallenge = challengeId;
-    document.getElementById('modalTitle').textContent = `Upload Photo: ${challengeName}`;
+    document.getElementById('modalTitle').textContent = `Upload: ${challengeName}`;
     document.getElementById('uploadModal').classList.remove('hidden');
     document.getElementById('uploadForm').reset();
     document.getElementById('uploadMessage').textContent = '';
+    document.getElementById('selectedFileName').textContent = '';
 }
 
 function closeUploadModal() {
@@ -510,27 +523,48 @@ async function handlePhotoUpload(e) {
     const file = fileInput.files[0];
     
     if (!file) {
-        showUploadMessage('Please select a photo', true);
+        showUploadMessage('Please select a photo or video first', true);
         return;
     }
     
-    showUploadMessage('Uploading...', false);
+    // FIX: Warn about large video files before uploading
+    const isVideo = file.type.startsWith('video/');
+    const sizeMB = file.size / (1024 * 1024);
+    
+    if (sizeMB > 100) {
+        showUploadMessage('File too large (max 100MB). Please use a shorter video.', true);
+        return;
+    }
+    
+    if (isVideo && sizeMB > 30) {
+        const proceed = confirm(`⚠️ Video is ${sizeMB.toFixed(0)}MB — this will take a while on mobile data.\n\nTip: Keep videos under 30 seconds for faster uploads.\n\nContinue anyway?`);
+        if (!proceed) return;
+    }
+    
+    const sizeLabel = sizeMB.toFixed(1);
+    showUploadMessage(`Uploading ${sizeLabel}MB... please wait ⏳`, false);
+    
+    // Show slow-upload warning after 8 seconds
+    const slowWarning = setTimeout(() => {
+        showUploadMessage(`Still uploading ${sizeLabel}MB — videos take longer on mobile 📶`, false);
+    }, 8000);
     
     try {
-        // Upload photo to storage
-        const fileName = `${currentTeam.email}_${selectedChallenge}_${Date.now()}.${file.name.split('.').pop()}`;
+        const ext = file.name.split('.').pop();
+        const fileName = `${currentTeam.email}_${selectedChallenge}_${Date.now()}.${ext}`;
+        
         const { data: uploadData, error: uploadError } = await supabaseClient.storage
             .from('challenge-photos')
             .upload(fileName, file);
         
         if (uploadError) throw uploadError;
         
-        // Get public URL
+        clearTimeout(slowWarning);
+        
         const { data: { publicUrl } } = supabaseClient.storage
             .from('challenge-photos')
             .getPublicUrl(fileName);
         
-        // Create submission record
         const { error: submissionError } = await supabaseClient
             .from('submissions')
             .insert([{
@@ -543,7 +577,7 @@ async function handlePhotoUpload(e) {
         
         if (submissionError) throw submissionError;
         
-        showUploadMessage('Photo uploaded successfully!', false);
+        showUploadMessage('✅ Uploaded successfully!', false);
         
         setTimeout(() => {
             closeUploadModal();
@@ -551,6 +585,7 @@ async function handlePhotoUpload(e) {
         }, 1500);
         
     } catch (error) {
+        clearTimeout(slowWarning);
         console.error('Upload error:', error);
         showUploadMessage('Upload failed: ' + error.message, true);
     }
@@ -585,12 +620,10 @@ async function loadPendingSubmissions() {
         container.innerHTML = '';
         
         submissions.forEach(submission => {
-            // Skip submissions from deleted teams
             if (!submission.teams || !submission.challenges) {
                 console.warn('Skipping submission with missing team or challenge data:', submission.id);
                 return;
             }
-            
             const card = createSubmissionCard(submission);
             container.appendChild(card);
         });
@@ -605,6 +638,13 @@ function createSubmissionCard(submission) {
     card.className = 'submission-card';
     
     const teamIcon = submission.teams.icon || '🏯';
+    const url = submission.photo_url;
+    
+    // FIX: Show video player for video submissions
+    const isVideo = /\.(mp4|mov|avi|webm|mkv|m4v)$/i.test(url);
+    const mediaHTML = isVideo
+        ? `<video src="${url}" class="submission-photo" controls playsinline preload="metadata"></video>`
+        : `<img src="${url}" alt="Submission photo" class="submission-photo" onclick="window.open('${url}', '_blank')">`;
     
     card.innerHTML = `
         <h4>${submission.challenges.name}</h4>
@@ -613,7 +653,7 @@ function createSubmissionCard(submission) {
             <p><strong>Base Points:</strong> ${submission.challenges.points}</p>
             <p><strong>Submitted:</strong> ${new Date(submission.created_at).toLocaleString()}</p>
         </div>
-        <img src="${submission.photo_url}" alt="Submission photo" class="submission-photo" onclick="window.open('${submission.photo_url}', '_blank')">
+        ${mediaHTML}
         <div class="submission-actions">
             <button class="btn-approve" onclick="approveSubmission(${submission.id}, ${submission.challenge_id}, '${submission.team_email}', ${submission.challenges.points})">✅ Approve</button>
             <button class="btn-reject" onclick="rejectSubmission(${submission.id})">❌ Reject</button>
@@ -625,21 +665,16 @@ function createSubmissionCard(submission) {
 
 async function approveSubmission(submissionId, challengeId, teamEmail, basePoints) {
     try {
-        // Get ALL submissions for this challenge (regardless of status) to determine true ranking
         const { data: allSubmissions } = await supabaseClient
             .from('submissions')
             .select('id, created_at, status')
             .eq('challenge_id', challengeId)
             .order('created_at', { ascending: true });
         
-        // Find the rank by timestamp (1st submitted = rank 1, 2nd submitted = rank 2, etc.)
         const rank = allSubmissions.findIndex(s => s.id === submissionId) + 1;
-        
-        // Only first team gets bonus, everyone else gets base points only
         const orderBonus = rank === 1 ? 10 : 0;
         const totalPoints = basePoints + orderBonus;
         
-        // Update submission
         const { error: updateError } = await supabaseClient
             .from('submissions')
             .update({
@@ -650,7 +685,6 @@ async function approveSubmission(submissionId, challengeId, teamEmail, basePoint
         
         if (updateError) throw updateError;
         
-        // Update team points
         const { data: team } = await supabaseClient
             .from('teams')
             .select('points')
@@ -749,7 +783,7 @@ async function toggleChallenge(challengeId, enabled) {
         
         if (error) throw error;
         
-        alert(enabled ? '✅ Challenge Enabled!' : '🔒 Challenge Disabled');
+        alert(enabled ? '✅ Challenge Enabled!' : '🔑 Challenge Disabled');
         
     } catch (error) {
         console.error('Error toggling challenge:', error);
@@ -767,7 +801,6 @@ function toggleAddChallengeForm() {
     if (form.classList.contains('hidden')) {
         form.classList.remove('hidden');
         message.classList.add('hidden');
-        // Clear form
         document.getElementById('newChallengeName').value = '';
         document.getElementById('newChallengeDescription').value = '';
         document.getElementById('newChallengePoints').value = '';
@@ -805,7 +838,6 @@ async function createChallenge() {
         
         showAddChallengeMessage('✅ Challenge created successfully!', false);
         
-        // Hide form after 1.5 seconds and refresh list
         setTimeout(() => {
             toggleAddChallengeForm();
             loadManageChallenges();
@@ -891,12 +923,10 @@ async function loadGallery() {
         container.innerHTML = '';
         
         submissions.forEach(submission => {
-            // Skip submissions from deleted teams
             if (!submission.teams || !submission.challenges) {
                 console.warn('Skipping submission with missing team or challenge data:', submission.id);
                 return;
             }
-            
             const card = createGalleryCard(submission);
             container.appendChild(card);
         });
@@ -912,9 +942,19 @@ function createGalleryCard(submission) {
     
     const submittedDate = new Date(submission.created_at).toLocaleString();
     const teamIcon = submission.teams.icon || '🏯';
+    const url = submission.photo_url;
+    
+    // FIX: Show video player for video submissions
+    const isVideo = /\.(mp4|mov|avi|webm|mkv|m4v)$/i.test(url);
+    const mediaHTML = isVideo
+        ? `<video class="gallery-photo" controls playsinline preload="metadata">
+               <source src="${url}" type="video/mp4">
+               <source src="${url}">
+           </video>`
+        : `<img src="${url}" alt="Challenge photo" class="gallery-photo" onclick="window.open('${url}', '_blank')">`;
     
     card.innerHTML = `
-        <img src="${submission.photo_url}" alt="Challenge photo" class="gallery-photo" onclick="window.open('${submission.photo_url}', '_blank')">
+        ${mediaHTML}
         <div class="gallery-info">
             <h4>${submission.challenges.name}</h4>
             <p><strong>Team:</strong> ${teamIcon} ${submission.teams.team_name}</p>
@@ -1000,16 +1040,12 @@ async function handleSetNewPassword(e) {
         showSetNewPasswordMessage('✅ Password updated successfully!', false);
         
         setTimeout(async () => {
-            // Sign out and clear all session data
             await supabaseClient.auth.signOut();
-            sessionStorage.removeItem('staySignedIn');
-            localStorage.clear();
+            localStorage.removeItem('staySignedIn'); // FIX: localStorage
             
-            // Close modal and show login
             document.getElementById('setNewPasswordModal').classList.add('hidden');
             document.getElementById('authScreen').classList.remove('hidden');
             
-            // Clear the hash from URL
             window.location.hash = '';
             
             alert('Password updated! You can now log in with your new password.');
@@ -1097,21 +1133,15 @@ function closeAdminResetPasswordModal() {
 
 async function handleAdminResetPassword(e) {
     e.preventDefault();
-    const newPassword = document.getElementById('newTempPassword').value;
     
     if (!selectedTeamForReset) {
         showAdminResetPasswordMessage('Error: No team selected', true);
         return;
     }
     
-    showAdminResetPasswordMessage('Resetting password...', false);
+    showAdminResetPasswordMessage('Sending reset email...', false);
     
     try {
-        // Note: Supabase doesn't allow direct password updates via client SDK for security
-        // We need to use the admin API which requires the service role key
-        // For now, we'll show instructions to use the Supabase dashboard
-        
-        // Alternative approach: Send password reset email
         const { error } = await supabaseClient.auth.resetPasswordForEmail(selectedTeamForReset, {
             redirectTo: window.location.origin
         });
@@ -1119,7 +1149,7 @@ async function handleAdminResetPassword(e) {
         if (error) throw error;
         
         showAdminResetPasswordMessage(
-            `✅ Password reset email sent to ${selectedTeamForReset}\n\nAlternatively, you can reset it in Supabase Dashboard:\n1. Go to Authentication > Users\n2. Find ${selectedTeamForReset}\n3. Click "..." > Reset Password`,
+            `✅ Password reset email sent to ${selectedTeamForReset}\n\nAlternatively: Supabase Dashboard → Authentication → Users → find user → "..." → Reset Password`,
             false
         );
         
@@ -1137,5 +1167,5 @@ function showAdminResetPasswordMessage(message, isError) {
     const messageEl = document.getElementById('adminResetPasswordMessage');
     messageEl.textContent = message;
     messageEl.className = 'message ' + (isError ? 'error' : 'success');
-    messageEl.style.whiteSpace = 'pre-line'; // Allow line breaks
+    messageEl.style.whiteSpace = 'pre-line';
 }
