@@ -1383,3 +1383,128 @@ input:checked + .toggle-slider:before {
         font-size: 0.85em;
     }
 }
+/* ============================================
+   PASSWORD EYE TOGGLE (NEW)
+   ============================================ */
+.password-wrapper {
+    position: relative;
+    margin-bottom: 15px;
+}
+
+.password-wrapper input {
+    width: 100%;
+    padding: 14px 50px 14px 14px;
+    border: 2px solid #ffb7c5;
+    border-radius: 8px;
+    font-size: 16px;
+    min-height: 48px;
+    transition: border-color 0.3s;
+    margin-bottom: 0;
+}
+
+.password-wrapper input:focus {
+    outline: none;
+    border-color: #c41e3a;
+}
+
+.eye-toggle {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.3em;
+    padding: 6px;
+    color: #999;
+    line-height: 1;
+    -webkit-tap-highlight-color: transparent;
+    border-radius: 4px;
+}
+
+.eye-toggle:hover {
+    color: #c41e3a;
+}
+
+/* Modal password fields also need the wrapper to work */
+.modal-content .password-wrapper input {
+    width: 100%;
+    padding: 14px 50px 14px 14px;
+    margin-bottom: 0;
+    border: 2px solid #ffb7c5;
+    border-radius: 8px;
+    font-size: 16px;
+    min-height: 48px;
+}
+
+/* ============================================
+   CAMERA / GALLERY UPLOAD BUTTONS (NEW)
+   ============================================ */
+.camera-options {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.btn-camera,
+.btn-gallery {
+    flex: 1;
+    padding: 18px 10px;
+    border: 3px dashed #c41e3a;
+    border-radius: 12px;
+    background: #fff9fb;
+    color: #c41e3a;
+    font-size: 0.95em;
+    font-weight: 700;
+    cursor: pointer;
+    min-height: 70px;
+    transition: all 0.3s;
+    line-height: 1.3;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.btn-camera:hover,
+.btn-gallery:hover {
+    background: #ffb7c5;
+    border-style: solid;
+}
+
+.btn-camera:active,
+.btn-gallery:active {
+    transform: scale(0.97);
+}
+
+.file-selected-name {
+    text-align: center;
+    color: #28a745;
+    font-weight: 600;
+    font-size: 0.88em;
+    margin-bottom: 12px;
+    min-height: 18px;
+    word-break: break-all;
+}
+
+/* Small screens: stack camera buttons vertically */
+@media (max-width: 360px) {
+    .camera-options {
+        flex-direction: column;
+    }
+    .btn-camera,
+    .btn-gallery {
+        min-height: 55px;
+    }
+}
+
+/* Videos in gallery should not scale on hover (they have controls) */
+video.gallery-photo:hover {
+    transform: none;
+}
+
+/* Video in gallery: fixed height like images */
+video.gallery-photo {
+    height: 250px;
+    object-fit: contain;
+    background: #000;
+    cursor: default;
+}
