@@ -43,11 +43,14 @@
             
             <!-- Login Form -->
             <form id="loginForm" class="auth-form">
-                <input type="email" id="loginEmail" placeholder="Team Email" required>
-                <input type="password" id="loginPassword" placeholder="Password" required>
+                <input type="email" id="loginEmail" placeholder="Team Email" required autocomplete="email">
+                <div class="password-wrapper">
+                    <input type="password" id="loginPassword" placeholder="Password" required autocomplete="current-password">
+                    <button type="button" class="eye-toggle" onclick="togglePassword('loginPassword', this)">👁️</button>
+                </div>
                 <div class="remember-me">
                     <input type="checkbox" id="rememberMe" checked>
-                    <label for="rememberMe">Remember me (stay signed in)</label>
+                    <label for="rememberMe">Stay signed in</label>
                 </div>
                 <button type="submit" class="btn-primary">Login</button>
             </form>
@@ -59,9 +62,12 @@
 
             <!-- Signup Form -->
             <form id="signupForm" class="auth-form hidden">
-                <input type="text" id="signupTeamName" placeholder="Team Name" required>
-                <input type="email" id="signupEmail" placeholder="Team Email" required>
-                <input type="password" id="signupPassword" placeholder="Password (min 6 characters)" required minlength="6">
+                <input type="text" id="signupTeamName" placeholder="Team Name" required autocomplete="off">
+                <input type="email" id="signupEmail" placeholder="Team Email" required autocomplete="email">
+                <div class="password-wrapper">
+                    <input type="password" id="signupPassword" placeholder="Password (min 6 characters)" required minlength="6" autocomplete="new-password">
+                    <button type="button" class="eye-toggle" onclick="togglePassword('signupPassword', this)">👁️</button>
+                </div>
                 
                 <!-- Team Icon Selector -->
                 <div class="icon-selector">
@@ -72,13 +78,13 @@
                         <div class="icon-option" data-icon="⛩️">⛩️</div>
                         <div class="icon-option" data-icon="🌸">🌸</div>
                         <div class="icon-option" data-icon="🦊">🦊</div>
-                        <div class="icon-option" data-icon="🍱">🍱</div>
+                        <div class="icon-option" data-icon="🐱">🐱</div>
                         <div class="icon-option" data-icon="🚄">🚄</div>
                         <div class="icon-option" data-icon="🗾">🗾</div>
                         <div class="icon-option" data-icon="🍣">🍣</div>
                         <div class="icon-option" data-icon="🎌">🎌</div>
                         <div class="icon-option" data-icon="🗻">🗻</div>
-                        <div class="icon-option" data-icon="🍮">🍮</div>
+                        <div class="icon-option" data-icon="🏮">🏮</div>
                     </div>
                     <input type="hidden" id="selectedIcon" value="🏯" required>
                 </div>
@@ -215,15 +221,24 @@
         <div class="modal-content">
             <h3 id="modalTitle">Upload Photo</h3>
             <form id="uploadForm">
-                <!-- Camera/file input with mobile camera access -->
+                <!-- Two buttons: take photo OR choose from gallery -->
+                <div class="camera-options">
+                    <button type="button" class="btn-camera" onclick="triggerCapture('environment')">
+                        📷 Take Photo / Video
+                    </button>
+                    <button type="button" class="btn-gallery" onclick="triggerCapture(null)">
+                        🖼️ Choose from Gallery
+                    </button>
+                </div>
+                <!-- Hidden file input, triggered by buttons above -->
                 <input type="file" 
                        id="photoInput" 
-                       accept="image/*,video/*" 
-                       capture="environment"
+                       accept="image/*,video/*"
+                       style="display:none"
                        required>
-                <div class="file-input-hint">📷 Tap to take photo/video or choose from gallery</div>
+                <div id="selectedFileName" class="file-selected-name"></div>
                 <div class="modal-buttons">
-                    <button type="submit" class="btn-primary">Submit Photo</button>
+                    <button type="submit" class="btn-primary">Submit</button>
                     <button type="button" class="btn-secondary" onclick="closeUploadModal()">Cancel</button>
                 </div>
             </form>
@@ -237,16 +252,14 @@
             <h3>Set Your New Password</h3>
             <p class="modal-description">Enter your new password below.</p>
             <form id="setNewPasswordForm">
-                <input type="password" 
-                       id="newPassword" 
-                       placeholder="New Password" 
-                       minlength="6"
-                       required>
-                <input type="password" 
-                       id="confirmPassword" 
-                       placeholder="Confirm New Password" 
-                       minlength="6"
-                       required>
+                <div class="password-wrapper">
+                    <input type="password" id="newPassword" placeholder="New Password" minlength="6" required autocomplete="new-password">
+                    <button type="button" class="eye-toggle" onclick="togglePassword('newPassword', this)">👁️</button>
+                </div>
+                <div class="password-wrapper">
+                    <input type="password" id="confirmPassword" placeholder="Confirm New Password" minlength="6" required autocomplete="new-password">
+                    <button type="button" class="eye-toggle" onclick="togglePassword('confirmPassword', this)">👁️</button>
+                </div>
                 <div class="password-hint">Minimum 6 characters</div>
                 <div class="modal-buttons">
                     <button type="submit" class="btn-primary">Update Password</button>
@@ -265,7 +278,8 @@
                 <input type="email" 
                        id="forgotPasswordEmail" 
                        placeholder="Team Email" 
-                       required>
+                       required
+                       autocomplete="email">
                 <div class="modal-buttons">
                     <button type="submit" class="btn-primary">Send Reset Link</button>
                     <button type="button" class="btn-secondary" onclick="closeForgotPasswordModal()">Cancel</button>
@@ -281,11 +295,10 @@
             <h3 id="resetPasswordTitle">Reset Team Password</h3>
             <p class="modal-description">Enter a new temporary password for <strong id="resetTeamName"></strong></p>
             <form id="adminResetPasswordForm">
-                <input type="password" 
-                       id="newTempPassword" 
-                       placeholder="New Temporary Password" 
-                       minlength="6"
-                       required>
+                <div class="password-wrapper">
+                    <input type="password" id="newTempPassword" placeholder="New Temporary Password" minlength="6" required autocomplete="new-password">
+                    <button type="button" class="eye-toggle" onclick="togglePassword('newTempPassword', this)">👁️</button>
+                </div>
                 <div class="password-hint">Minimum 6 characters. Team will use this to log in.</div>
                 <div class="modal-buttons">
                     <button type="submit" class="btn-primary">Reset Password</button>
