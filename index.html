@@ -232,10 +232,14 @@
                 </div>
                 <!-- Hidden file input, triggered by buttons above -->
                 <input type="file" 
-                       id="photoInput" 
-                       accept="image/*,video/*"
-                       style="display:none"
-                       required>
+       id="photoInputCamera" 
+       accept="image/*,video/*"
+       capture="environment"
+       style="display:none">
+<input type="file" 
+       id="photoInputGallery" 
+       accept="image/*,video/*"
+       style="display:none">
                 <div id="selectedFileName" class="file-selected-name"></div>
                 <div class="modal-buttons">
                     <button type="submit" class="btn-primary">Submit</button>
