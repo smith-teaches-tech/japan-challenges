@@ -34,20 +34,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     // Show selected file name when user picks a file
     document.getElementById('photoInputCamera').addEventListener('change', function() {
-    const nameEl = document.getElementById('selectedFileName');
-    if (this.files[0]) {
-        const sizeMB = (this.files[0].size / (1024 * 1024)).toFixed(1);
-        nameEl.textContent = '✅ ' + this.files[0].name + ' (' + sizeMB + ' MB)';
-    }
-});
+        const nameEl = document.getElementById('selectedFileName');
+        if (this.files[0]) {
+            const sizeMB = (this.files[0].size / (1024 * 1024)).toFixed(1);
+            nameEl.textContent = '✅ ' + this.files[0].name + ' (' + sizeMB + ' MB)';
+        }
+    });
 
-document.getElementById('photoInputGallery').addEventListener('change', function() {
-    const nameEl = document.getElementById('selectedFileName');
-    if (this.files[0]) {
-        const sizeMB = (this.files[0].size / (1024 * 1024)).toFixed(1);
-        nameEl.textContent = '✅ ' + this.files[0].name + ' (' + sizeMB + ' MB)';
-    }
-});
+    document.getElementById('photoInputGallery').addEventListener('change', function() {
+        const nameEl = document.getElementById('selectedFileName');
+        if (this.files[0]) {
+            const sizeMB = (this.files[0].size / (1024 * 1024)).toFixed(1);
+            nameEl.textContent = '✅ ' + this.files[0].name + ' (' + sizeMB + ' MB)';
+        }
+    });
     
     // Set up icon selector
     setupIconSelector();
@@ -64,21 +64,17 @@ document.getElementById('photoInputGallery').addEventListener('change', function
     }
     
     // Check if user is already logged in
-    const { data: { user } } = await supabaseClient.auth.getUser();
-    if (user) {
-        // FIX: Use localStorage (persists after app is closed) not sessionStorage
-        const staySignedIn = localStorage.getItem('staySignedIn');
-        
-        if (staySignedIn === 'true' || staySignedIn === 'session-only') {
-            // Valid flag found — restore session
-            currentUser = user;
-            await initializeApp();
-        } else {
-            // No flag — sign out for safety
-            await supabaseClient.auth.signOut();
-            console.log('No stay-signed-in flag — showing login');
-        }
+    const { data: { session } } = await supabaseClient.auth.getSession();
+if (session?.user) {
+    const staySignedIn = localStorage.getItem('staySignedIn');
+    
+    if (staySignedIn === 'true' || staySignedIn === 'session-only') {
+        currentUser = session.user;
+        await initializeApp();
+    } else {
+        await supabaseClient.auth.signOut();
     }
+}
 });
 
 // ======================
