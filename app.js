@@ -33,15 +33,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('setNewPasswordForm').addEventListener('submit', handleSetNewPassword);
     
     // Show selected file name when user picks a file
-    document.getElementById('photoInput').addEventListener('change', function() {
-        const nameEl = document.getElementById('selectedFileName');
-        if (this.files[0]) {
-            const sizeMB = (this.files[0].size / (1024 * 1024)).toFixed(1);
-            nameEl.textContent = '✅ ' + this.files[0].name + ' (' + sizeMB + ' MB)';
-        } else {
-            nameEl.textContent = '';
-        }
-    });
+    document.getElementById('photoInputCamera').addEventListener('change', function() {
+    const nameEl = document.getElementById('selectedFileName');
+    if (this.files[0]) {
+        const sizeMB = (this.files[0].size / (1024 * 1024)).toFixed(1);
+        nameEl.textContent = '✅ ' + this.files[0].name + ' (' + sizeMB + ' MB)';
+    }
+});
+
+document.getElementById('photoInputGallery').addEventListener('change', function() {
+    const nameEl = document.getElementById('selectedFileName');
+    if (this.files[0]) {
+        const sizeMB = (this.files[0].size / (1024 * 1024)).toFixed(1);
+        nameEl.textContent = '✅ ' + this.files[0].name + ' (' + sizeMB + ' MB)';
+    }
+});
     
     // Set up icon selector
     setupIconSelector();
@@ -100,16 +106,12 @@ function togglePassword(inputId, btn) {
 // CAMERA / GALLERY TRIGGER
 // ======================
 function triggerCapture(captureMode) {
-    const input = document.getElementById('photoInput');
-    if (captureMode) {
-        input.setAttribute('capture', captureMode);
-    } else {
-        input.removeAttribute('capture');
-    }
-    // Reset so change event fires even if same file picked
-    input.value = '';
     document.getElementById('selectedFileName').textContent = '';
-    input.click();
+    if (captureMode) {
+        document.getElementById('photoInputCamera').click();
+    } else {
+        document.getElementById('photoInputGallery').click();
+    }
 }
 
 // ======================
@@ -514,13 +516,18 @@ function openUploadModal(challengeId, challengeName) {
 
 function closeUploadModal() {
     document.getElementById('uploadModal').classList.add('hidden');
+    document.getElementById('photoInputCamera').value = '';
+    document.getElementById('photoInputGallery').value = '';
+    document.getElementById('selectedFileName').textContent = '';
     selectedChallenge = null;
 }
 
 async function handlePhotoUpload(e) {
     e.preventDefault();
-    const fileInput = document.getElementById('photoInput');
-    const file = fileInput.files[0];
+    const cameraInput = document.getElementById('photoInputCamera');
+const galleryInput = document.getElementById('photoInputGallery');
+const file = (cameraInput.files && cameraInput.files[0]) || 
+             (galleryInput.files && galleryInput.files[0]);
     
     if (!file) {
         showUploadMessage('Please select a photo or video first', true);
@@ -579,6 +586,9 @@ async function handlePhotoUpload(e) {
         
         showUploadMessage('✅ Uploaded successfully!', false);
         
+        cameraInput.value = '';
+galleryInput.value = '';
+
         setTimeout(() => {
             closeUploadModal();
             loadChallenges();
