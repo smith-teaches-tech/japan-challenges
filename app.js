@@ -470,8 +470,8 @@ function createChallengeCard(challenge, submission) {
     let buttonHTML = '';
     
     if (!challenge.enabled) {
-        statusHTML = '<div class="challenge-locked">🔑 Locked</div>';
-        buttonHTML = '<button class="btn-upload" disabled>Locked</button>';
+        statusHTML = '<div class="challenge-locked">🔒 Coming soon...</div>';
+        buttonHTML = '<button class="btn-upload" disabled>🔑 Locked</button>';
     } else if (submission) {
         if (submission.status === 'pending') {
             statusHTML = '<div class="challenge-status status-pending">⏳ Pending Review</div>';
@@ -488,12 +488,16 @@ function createChallengeCard(challenge, submission) {
     }
     
     card.innerHTML = `
-        <h3>${challenge.name}</h3>
-        <p>${challenge.description}</p>
-        <span class="challenge-points">🏆 ${challenge.points} base points</span>
-        ${statusHTML}
-        ${buttonHTML}
-    `;
+    <h3>${challenge.name}</h3>
+    <p>${challenge.description}</p>
+    ${challenge.enabled 
+        ? `<span class="challenge-points">🏆 ${challenge.points} base points</span>` 
+        : `<span class="challenge-points">🏆 ${challenge.points} base points</span>
+           <div class="locked-overlay">🔒 Unlock this challenge to reveal the details</div>`
+    }
+    ${statusHTML}
+    ${buttonHTML}
+`;
     
     return card;
 }
