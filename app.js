@@ -3,10 +3,6 @@ console.log('app.js is loading');
 const SUPABASE_URL = 'https://nqrzfkanbotheicyyxni.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5xcnpma2FuYm90aGVpY3l5eG5pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAyMTY1MDMsImV4cCI6MjA4NTc5MjUwM30.Vaj-v83d4_djSridoaYk_vpOZGctccChE4wmaI7kxYQ';
 
-// Admin credentials
-const ADMIN_EMAIL = 'shmikie@gmail.com';
-const ADMIN_PASSWORD = 'admin123';
-
 // Initialize Supabase client
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
@@ -253,7 +249,7 @@ async function handleSignup(e) {
         const { error: teamError } = await supabaseClient
             .from('teams')
             .insert([
-                { email, team_name: teamName, points: 0, icon: icon }
+                { email, team_name: teamName, points: 0, icon: icon, user_id: authData.user.id }
             ]);
         
         if (teamError) throw teamError;
@@ -274,19 +270,9 @@ async function handleSignup(e) {
 }
 
 function showAdminLogin() {
-    const email = prompt('Admin Email:');
-    const password = prompt('Admin Password:');
-    
-    if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
-        isAdmin = true;
-        localStorage.setItem('staySignedIn', 'true'); // FIX: localStorage
-        document.getElementById('authScreen').classList.add('hidden');
-        document.getElementById('adminScreen').classList.remove('hidden');
-        updateUserInfo('Admin');
-        loadPendingSubmissions();
-    } else {
-        alert('Invalid admin credentials!');
-    }
+    // Admin logs in via the standard login form — no separate credentials needed
+    switchTab('login');
+    showAuthMessage('Use your admin account to log in.', false);
 }
 
 async function logout() {
@@ -315,9 +301,15 @@ function showAuthMessage(message, isError) {
 // APP INITIALIZATION
 // ======================
 async function initializeApp() {
-    if (currentUser.email === ADMIN_EMAIL) {
+    // Check JWT claim for admin status (set server-side via custom access token hook)
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    const jwt = session?.access_token
+        ? JSON.parse(atob(session.access_token.split('.')[1]))
+        : {};
+
+    if (jwt.is_admin === true) {
         isAdmin = true;
-        localStorage.setItem('staySignedIn', 'true'); // FIX: localStorage
+        localStorage.setItem('staySignedIn', 'true');
         document.getElementById('authScreen').classList.add('hidden');
         document.getElementById('adminScreen').classList.remove('hidden');
         updateUserInfo('Admin');
@@ -579,7 +571,8 @@ const file = (cameraInput.files && cameraInput.files[0]) ||
                 challenge_id: selectedChallenge,
                 photo_url: publicUrl,
                 status: 'pending',
-                points_awarded: 0
+                points_awarded: 0,
+                user_id: currentUser.id
             }]);
         
         if (submissionError) throw submissionError;
