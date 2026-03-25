@@ -235,6 +235,11 @@ async function handleSignup(e) {
     const password = document.getElementById('signupPassword').value;
     const icon = document.getElementById('selectedIcon').value;
     
+    if (!email.endsWith('@isg.edu.sa')) {
+        showAuthMessage('Sign up requires an ISG school email (@isg.edu.sa).', true);
+        return;
+    }
+
     showAuthMessage('Creating team...', false);
     
     try {
